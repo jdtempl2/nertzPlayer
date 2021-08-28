@@ -242,6 +242,27 @@ def can_stack_solitaire(card1: Card, card2: Card):
     return False
 
 
+def can_stack_solitaire_2cards(card1: Card, card2: Card):
+    # check if you will be able to stack card2 on top of card1
+    if card1.color == card2.color:
+        return card2.value == card1.value - 2
+    return False
+
+
+def can_stack_solitaire_ncards(card1: Card, card2: Card, num_cards):
+    # check if you will be able to stack card2 on top of card1
+    # n = number of cards between card1 and card2 (0 if no cards in between)
+    if num_cards == 1:
+        if not card1.color == card2.color:
+            return card2.value == (card1.value - num_cards)
+        return False
+
+    if num_cards == 2:
+        if card1.color == card2.color:
+            return card2.value == (card1.value - num_cards) or can_stack_solitaire_ncards(card1, card2, num_cards-1)
+        return False or can_stack_solitaire_ncards(card1, card2, num_cards-1)
+
+
 class Player:
     def __init__(self, table, name, skill, strategy, do_print):
         self.table = table
@@ -473,13 +494,19 @@ class Player:
                     return True
             return False
 
-        elif self.strat == 'one-deep':
+        else:
+            num_deep = 0
+            if self.strat == 'one-deep':
+                num_deep = 1
+            elif self.strat == 'two-deep':
+                num_deep = 2
+
             for stack in self.solitaireStacks:
                 hand_card = self.handStack.get_top_face_up()
                 nertz_card = self.nertzStack.get_top()
                 if stack.can_add_card(hand_card):
                     # check if hand card is right before the nertz card
-                    if can_stack_solitaire(hand_card, nertz_card):
+                    if can_stack_solitaire_ncards(hand_card, nertz_card, num_deep):
                         stack.add_card(hand_card)
                         self.handStack.remove_card()
                         if self.do_print:
@@ -694,6 +721,7 @@ class Game:
         self.is_over = False
         self.timeout = False
 
+
 def pick_a_player(num_players):
     chances = []
     for p in range(num_players):
@@ -728,7 +756,7 @@ if __name__ == '__main__':
                 'one-deep',
                 'never']
 
-    player_nums = [4]
+    player_nums = [6]
 
     number_games = 1000
 
@@ -739,7 +767,10 @@ if __name__ == '__main__':
         print('Playing {} games with {} players'.format(number_games, num))
         for n in range(num):
             table.add_player(names[n], skills[3], strategy[0])
-        table.players[0].strat = strategy[2]
+        table.players[0].strat = strategy[1]
+        table.players[1].strat = strategy[1]
+        table.players[2].strat = strategy[2]
+        table.players[3].strat = strategy[2]
         winners = []
         for g in range(number_games):
             game_stats = table.play_game()

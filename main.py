@@ -234,11 +234,13 @@ def combine_solitaire_stacks(stack1: SolitaireStack, stack2: SolitaireStack):
         stack2.add_card(card)
     stack1.empty_stack()
 
+
 def can_stack_solitaire(card1: Card, card2: Card):
     # check if you can stack card2 on top of card1 for solitaire
     if not card1.color == card2.color:
         return card2.value == card1.value - 1
     return False
+
 
 class Player:
     def __init__(self, table, name, skill, strategy, do_print):
@@ -616,6 +618,7 @@ class Table:
         timeout = 1000
         count = 0
         round_over = False
+        game.timeout = False
 
         while not round_over:
             self.play_one_tick()
@@ -661,14 +664,16 @@ class Table:
         game.round_count = 0
 
         while not game.is_over:
-            self.setup_table()
-            self.play_round(game)
+            game.timeout = True
+            while game.timeout:
+                self.setup_table()
+                self.play_round(game)
             game.round_count = game.round_count + 1
             game = self.score_round(game)
-            if game.timeout:
-                game.is_over = True
-                game.winner = "stuck"
-                game.round_count = -1
+            # if game.timeout:
+            #    game.is_over = True
+            #    game.winner = "stuck"
+            #    game.round_count = -1
 
         if self.do_print:
             print('+=========================+')

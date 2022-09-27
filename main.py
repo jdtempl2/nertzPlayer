@@ -1,6 +1,7 @@
 from statistics import mean, median
 from collections import Counter
 from NertzGame import *
+from NertzGUI import *
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -29,9 +30,11 @@ if __name__ == '__main__':
                 'two-deep',
                 'always']
 
-    player_nums = [3,4,5,6]
+    inputs = getInputs()
 
-    number_games = 100
+    #player_nums = [3,4,5,6]
+    player_nums = inputs[0]
+    number_games = inputs[1]
 
     for num in player_nums:
         table = Table()

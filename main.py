@@ -1,7 +1,5 @@
-import random
 from statistics import mean, median
 from collections import Counter
-from Card import *
 from NertzGame import *
 
 # Press the green button in the gutter to run the script.
